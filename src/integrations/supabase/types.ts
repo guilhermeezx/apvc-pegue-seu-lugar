@@ -19,24 +19,30 @@ export type Database = {
           created_at: string | null
           id: string
           id_tipo_passaro: string | null
+          nome_reservante: string | null
           numero: number
           status: string | null
+          telefone: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           id_tipo_passaro?: string | null
+          nome_reservante?: string | null
           numero: number
           status?: string | null
+          telefone?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           id_tipo_passaro?: string | null
+          nome_reservante?: string | null
           numero?: number
           status?: string | null
+          telefone?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -209,7 +215,39 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      authenticate_admin: {
+        Args: { email_input: string; password_input: string }
+        Returns: Json
+      }
+      cancel_stake_reservation: {
+        Args: { stake_id: string }
+        Returns: Json
+      }
+      confirm_stake_payment: {
+        Args: { stake_id: string }
+        Returns: Json
+      }
+      create_tournament_complete: {
+        Args: {
+          tournament_name: string
+          tournament_date: string
+          stake_value: number
+          bird_types: Json
+        }
+        Returns: Json
+      }
+      get_dashboard_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      reserve_stake: {
+        Args: {
+          stake_id: string
+          customer_name: string
+          customer_phone: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

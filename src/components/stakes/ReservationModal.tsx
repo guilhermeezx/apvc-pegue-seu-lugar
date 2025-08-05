@@ -60,7 +60,7 @@ export const ReservationModal = ({ stake, tournament, onClose, onSuccess }: Rese
       const { error } = await supabase
         .from('estacas')
         .update({
-          status: 'pendente',
+          status: 'reservado',
           nome_reservante: nome.trim(),
           telefone: telefone.trim(),
         })

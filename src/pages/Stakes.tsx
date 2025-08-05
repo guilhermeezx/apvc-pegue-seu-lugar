@@ -24,11 +24,10 @@ interface Tournament {
 interface Stake {
   id: string;
   numero: number;
-  status: 'disponivel' | 'pendente' | 'confirmada';
+  status: 'disponivel' | 'reservado' | 'confirmado';
   nome_reservante?: string;
   telefone?: string;
-  id_passaro: string;
-  id_torneio: string;
+  id_tipo_passaro: string;
 }
 
 const Stakes = () => {
@@ -71,10 +70,13 @@ const Stakes = () => {
         const { data: stakesData } = await supabase
           .from('estacas')
           .select('*')
-          .eq('id_passaro', birdTypeId)
+          .eq('id_tipo_passaro', birdTypeId)
           .order('numero');
 
-        setStakes(stakesData || []);
+        setStakes((stakesData || []).map(stake => ({
+          ...stake,
+          status: stake.status as 'disponivel' | 'reservado' | 'confirmado'
+        })));
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);

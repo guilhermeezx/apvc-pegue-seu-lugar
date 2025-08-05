@@ -47,17 +47,37 @@ const Home = () => {
       if (tournamentData) {
         setTournament(tournamentData);
 
-        // Buscar tipos de pássaro do torneio ativo
+        // Buscar tipos de pássaro do torneio ativo com contagem de estacas
         const { data: typesData } = await supabase
           .from('tipos_passaro')
-          .select(`
-            *,
-            estacas_count:estacas(count),
-            estacas_disponiveis:estacas(count).eq(status, 'disponivel')
-          `)
+          .select('*')
           .eq('id_torneio', tournamentData.id);
 
-        setBirdTypes(typesData || []);
+        if (typesData) {
+          // Para cada tipo de pássaro, buscar as contagens de estacas
+          const typesWithCounts = await Promise.all(
+            typesData.map(async (type) => {
+              const { count: totalCount } = await supabase
+                .from('estacas')
+                .select('*', { count: 'exact', head: true })
+                .eq('id_tipo_passaro', type.id);
+
+              const { count: availableCount } = await supabase
+                .from('estacas')
+                .select('*', { count: 'exact', head: true })
+                .eq('id_tipo_passaro', type.id)
+                .eq('status', 'disponivel');
+
+              return {
+                ...type,
+                estacas_count: totalCount || 0,
+                estacas_disponiveis: availableCount || 0,
+              };
+            })
+          );
+
+          setBirdTypes(typesWithCounts);
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar torneio:', error);

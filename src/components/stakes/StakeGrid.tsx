@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 interface Stake {
   id: string;
   numero: number;
-  status: 'disponivel' | 'pendente' | 'confirmada';
+  status: 'disponivel' | 'reservado' | 'confirmado';
   nome_reservante?: string;
   telefone?: string;
 }
@@ -20,9 +20,9 @@ export const StakeGrid = ({ stakes, onStakeClick, isAdmin = false, onAdminAction
     switch (status) {
       case 'disponivel':
         return 'bg-success hover:bg-success/90 text-white';
-      case 'pendente':
+      case 'reservado':
         return 'bg-warning text-black';
-      case 'confirmada':
+      case 'confirmado':
         return 'bg-error text-white';
       default:
         return 'bg-muted text-muted-foreground';
@@ -33,9 +33,9 @@ export const StakeGrid = ({ stakes, onStakeClick, isAdmin = false, onAdminAction
     switch (status) {
       case 'disponivel':
         return 'Disponível';
-      case 'pendente':
+      case 'reservado':
         return 'Pendente';
-      case 'confirmada':
+      case 'confirmado':
         return 'Confirmada';
       default:
         return '';
@@ -90,7 +90,7 @@ export const StakeGrid = ({ stakes, onStakeClick, isAdmin = false, onAdminAction
             {isAdmin && stake.status !== 'disponivel' && onAdminAction && (
               <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="flex gap-1">
-                  {stake.status === 'pendente' && (
+                  {stake.status === 'reservado' && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

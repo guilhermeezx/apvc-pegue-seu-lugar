@@ -14,7 +14,196 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      estacas: {
+        Row: {
+          created_at: string | null
+          id: string
+          id_tipo_passaro: string | null
+          numero: number
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          id_tipo_passaro?: string | null
+          numero: number
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          id_tipo_passaro?: string | null
+          numero?: number
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estacas_id_tipo_passaro_fkey"
+            columns: ["id_tipo_passaro"]
+            isOneToOne: false
+            referencedRelation: "tipos_passaro"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reservas: {
+        Row: {
+          created_at: string | null
+          data_pagamento: string | null
+          data_reserva: string | null
+          id: string
+          id_estaca: string | null
+          id_usuario: string | null
+          observacoes: string | null
+          status_pagamento: string | null
+          updated_at: string | null
+          valor_pago: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_reserva?: string | null
+          id?: string
+          id_estaca?: string | null
+          id_usuario?: string | null
+          observacoes?: string | null
+          status_pagamento?: string | null
+          updated_at?: string | null
+          valor_pago?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_pagamento?: string | null
+          data_reserva?: string | null
+          id?: string
+          id_estaca?: string | null
+          id_usuario?: string | null
+          observacoes?: string | null
+          status_pagamento?: string | null
+          updated_at?: string | null
+          valor_pago?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservas_id_estaca_fkey"
+            columns: ["id_estaca"]
+            isOneToOne: false
+            referencedRelation: "estacas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservas_id_usuario_fkey"
+            columns: ["id_usuario"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tipos_passaro: {
+        Row: {
+          cor: string
+          created_at: string | null
+          id: string
+          id_torneio: string | null
+          nome: string
+          updated_at: string | null
+        }
+        Insert: {
+          cor: string
+          created_at?: string | null
+          id?: string
+          id_torneio?: string | null
+          nome: string
+          updated_at?: string | null
+        }
+        Update: {
+          cor?: string
+          created_at?: string | null
+          id?: string
+          id_torneio?: string | null
+          nome?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tipos_passaro_id_torneio_fkey"
+            columns: ["id_torneio"]
+            isOneToOne: false
+            referencedRelation: "torneios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      torneios: {
+        Row: {
+          ativo: boolean | null
+          created_at: string | null
+          data: string
+          descricao: string | null
+          id: string
+          local: string | null
+          nome: string
+          updated_at: string | null
+          valor_ficha: number
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data: string
+          descricao?: string | null
+          id?: string
+          local?: string | null
+          nome: string
+          updated_at?: string | null
+          valor_ficha: number
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string | null
+          data?: string
+          descricao?: string | null
+          id?: string
+          local?: string | null
+          nome?: string
+          updated_at?: string | null
+          valor_ficha?: number
+        }
+        Relationships: []
+      }
+      usuarios: {
+        Row: {
+          cpf: string | null
+          created_at: string | null
+          email: string
+          id: string
+          nome: string
+          telefone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cpf?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          nome: string
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cpf?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          nome?: string
+          telefone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

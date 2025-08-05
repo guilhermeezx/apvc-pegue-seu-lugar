@@ -5,17 +5,62 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Plus, TrendingUp, Users, Calendar } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [stats, setStats] = useState({
+    total: 0,
+    available: 0,
+    reserved: 0,
+    confirmed: 0,
+    revenue: 0
+  });
 
   useEffect(() => {
     // Verificar se está logado
     const isLoggedIn = localStorage.getItem('admin_logged_in');
     if (!isLoggedIn) {
       navigate('/admin');
+      return;
     }
+    
+    // Carregar estatísticas
+    loadStats();
   }, [navigate]);
+
+  const loadStats = async () => {
+    try {
+      const { data, error } = await supabase.rpc('get_dashboard_stats');
+      
+      if (error) throw error;
+      
+      const result = data as {
+        total_stakes: number;
+        available: number;
+        reserved: number;
+        confirmed: number;
+        total_revenue: number;
+      };
+      
+      setStats({
+        total: result.total_stakes,
+        available: result.available,
+        reserved: result.reserved,
+        confirmed: result.confirmed,
+        revenue: Number(result.total_revenue)
+      });
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar estatísticas do dashboard.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('admin_logged_in');
@@ -57,7 +102,7 @@ const AdminDashboard = () => {
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">0</div>
+                  <div className="text-2xl font-bold">{stats.total}</div>
                   <p className="text-xs text-muted-foreground">
                     Todas as categorias
                   </p>
@@ -70,7 +115,7 @@ const AdminDashboard = () => {
                   <div className="w-4 h-4 bg-success rounded-full"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">0</div>
+                  <div className="text-2xl font-bold">{stats.available}</div>
                   <p className="text-xs text-muted-foreground">
                     Prontas para reserva
                   </p>
@@ -83,7 +128,7 @@ const AdminDashboard = () => {
                   <div className="w-4 h-4 bg-warning rounded-full"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">0</div>
+                  <div className="text-2xl font-bold">{stats.reserved}</div>
                   <p className="text-xs text-muted-foreground">
                     Aguardando pagamento
                   </p>
@@ -96,7 +141,7 @@ const AdminDashboard = () => {
                   <div className="w-4 h-4 bg-error rounded-full"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">0</div>
+                  <div className="text-2xl font-bold">{stats.confirmed}</div>
                   <p className="text-xs text-muted-foreground">
                     Pagas e confirmadas
                   </p>
@@ -116,7 +161,9 @@ const AdminDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">R$ 0,00</div>
+                <div className="text-3xl font-bold text-primary">
+                  R$ {stats.revenue.toFixed(2)}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

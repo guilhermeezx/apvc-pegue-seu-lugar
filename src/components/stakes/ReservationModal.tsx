@@ -57,23 +57,29 @@ export const ReservationModal = ({ stake, tournament, onClose, onSuccess }: Rese
     setLoading(true);
     
     try {
-      const { error } = await supabase
-        .from('estacas')
-        .update({
-          status: 'reservado',
-          nome_reservante: nome.trim(),
-          telefone: telefone.trim(),
-        })
-        .eq('id', stake.id);
+      const { data, error } = await supabase.rpc('reserve_stake', {
+        stake_id: stake.id,
+        customer_name: nome.trim(),
+        customer_phone: telefone.trim(),
+      });
 
       if (error) throw error;
 
-      toast({
-        title: "Reserva realizada!",
-        description: "Estaca reservada com sucesso. Envie o comprovante via WhatsApp.",
-      });
-
-      onSuccess();
+      const result = data as { success: boolean; message?: string; error?: string };
+      
+      if (result.success) {
+        toast({
+          title: "Reserva realizada!",
+          description: "Estaca reservada com sucesso. Envie o comprovante via WhatsApp.",
+        });
+        onSuccess();
+      } else {
+        toast({
+          title: "Erro",
+          description: result.error || "Erro ao realizar reserva.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Erro ao reservar estaca:', error);
       toast({

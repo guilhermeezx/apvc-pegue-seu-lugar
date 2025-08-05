@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -16,25 +17,55 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    // Login fixo conforme especificação
-    if (email === "gilbertohorstmann@hotmail.com" && password === "APVC2025$") {
-      localStorage.setItem('admin_logged_in', 'true');
+    
+    if (!email || !password) {
       toast({
-        title: "Login realizado!",
-        description: "Bem-vindo ao painel administrativo.",
-      });
-      navigate("/admin/dashboard");
-    } else {
-      toast({
-        title: "Erro de login",
-        description: "Email ou senha incorretos.",
+        title: "Erro",
+        description: "Por favor, preencha todos os campos.",
         variant: "destructive",
       });
+      return;
     }
 
-    setLoading(false);
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase.rpc('authenticate_admin', {
+        email_input: email,
+        password_input: password,
+      });
+
+      if (error) throw error;
+
+      const result = data as { success: boolean; user?: any; error?: string };
+      
+      if (result.success) {
+        localStorage.setItem('admin_logged_in', 'true');
+        localStorage.setItem('admin_user', JSON.stringify(result.user));
+        
+        toast({
+          title: "Login realizado!",
+          description: "Bem-vindo ao painel administrativo.",
+        });
+        
+        navigate('/admin/dashboard');
+      } else {
+        toast({
+          title: "Erro de login",
+          description: result.error || "Email ou senha incorretos.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao fazer login. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
